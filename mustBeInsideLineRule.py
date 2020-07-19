@@ -107,7 +107,7 @@ class MustBeInsideLineRule(AbstractTopologyRule):
                                         -1,
                                         -1,
                                         False,
-                                        "The line is not contained.",
+                                        "The multiline is not contained.",
                                         ""
                                     )
             else:
