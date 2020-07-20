@@ -26,13 +26,17 @@ class MustBeInsideLineRule(AbstractTopologyRule):
         self.addAction(DeleteLineAction())
         # self.addAction(MarkLineAction())
     
-    def contains(self, buffer1, theDataSet2):
+    def contains(self, line1, theDataSet2, tolerance1):
         result = [False, []]
         if theDataSet2.getSpatialIndex() != None:
-            for featureReference in theDataSet2.query(buffer1):
+            for featureReference in theDataSet2.query(line1):
                 feature2 = featureReference.getFeature()
                 polygon2 = feature2.getDefaultGeometry()
-                if polygon2.contains(buffer1):
+                if tolerance1 > 0:
+                    buffer2 = polygon2.buffer(tolerance1)
+                else:
+                    buffer2 = polygon2
+                if buffer2.contains(line1):
                     result[0] = True
                     break
         else:
@@ -47,10 +51,11 @@ class MustBeInsideLineRule(AbstractTopologyRule):
                     self.expressionBuilder.column(self.geomName),
                     self.expressionBuilder.constant(False),
                     self.expressionBuilder.ST_Contains(
-                        self.expressionBuilder.ST_ExteriorRing(
-                            self.expressionBuilder.geometry(buffer1)
+                        self.expressionBuilder.ST_Buffer(
+                            self.expressionBuilder.column(self.geomName),
+                            tolerance1
                         ),
-                        self.expressionBuilder.column(self.geomName)
+                        self.expressionBuilder.geometry(line1)
                     )
                 ).toString()
             )
@@ -66,50 +71,40 @@ class MustBeInsideLineRule(AbstractTopologyRule):
             geometryType1 = line1.getGeometryType()
             if geometryType1.getSubType() == geom.D2 or geometryType1.getSubType() == geom.D2M:
                 if geometryType1.getType() == geom.LINE or geometryType1.isTypeOf(geom.LINE):
-                    if tolerance1 > 0:
-                        buffer1 = line1.buffer(tolerance1)
-                    else:
-                        buffer1 = line1
-                    result = self.contains(buffer1, theDataSet2)
+                    result = self.contains(line1, theDataSet2, tolerance1)
                     if not result[0]:
-                        for i in range(0, len(result[1])):
-                            report.addLine(self,
-                                self.getDataSet1(),
-                                self.getDataSet2(),
-                                line1,
-                                line1,
-                                feature1.getReference(),
-                                result[1][i].getReference(), # feature2
-                                -1,
-                                -1,
-                                False,
-                                "The line is not contained.",
-                                ""
-                            )
+                        report.addLine(self,
+                            self.getDataSet1(),
+                            self.getDataSet2(),
+                            line1,
+                            line1,
+                            feature1.getReference(),
+                            None,
+                            -1,
+                            -1,
+                            False,
+                            "The line is not contained.",
+                            ""
+                        )
                 else:
                     if geometryType1.getType() == geom.MULTILINE or geometryType1.isTypeOf(geom.MULTILINE):
                         n1 = line1.getPrimitivesNumber()
                         for i in range(0, n1 + 1):
-                            if tolerance1 > 0:
-                                buffer1 = line1.getCurveAt(i).buffer(tolerance1)
-                            else:
-                                buffer1 = line1.getCurveAt(i)
-                            result = self.contains(buffer1, theDataSet2)
+                            result = self.contains(buffer1, theDataSet2, tolerance1)
                             if not result[0]:
-                                for i in range(0, len(result[1])):
-                                    report.addLine(self,
-                                        self.getDataSet1(),
-                                        self.getDataSet2(),
-                                        line1,
-                                        line1,
-                                        feature1.getReference(),
-                                        result[1][i].getReference(), # feature2
-                                        -1,
-                                        -1,
-                                        False,
-                                        "The multiline is not contained.",
-                                        ""
-                                    )
+                                report.addLine(self,
+                                    self.getDataSet1(),
+                                    self.getDataSet2(),
+                                    line1,
+                                    line1,
+                                    feature1.getReference(),
+                                    None,
+                                    -1,
+                                    -1,
+                                    False,
+                                    "The multiline is not contained.",
+                                    ""
+                                )
             else:
                 report.addLine(self,
                     self.getDataSet1(),
