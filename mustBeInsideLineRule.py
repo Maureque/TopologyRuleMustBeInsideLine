@@ -46,19 +46,19 @@ class MustBeInsideLineRule(AbstractTopologyRule):
                 # self.expressionBuilder = GeometryExpressionEvaluatorLocator.getManager().createExpressionBuilder()
                 store2 = theDataSet2.getFeatureStore()
                 self.geomName = store2.getDefaultFeatureType().getDefaultGeometryAttributeName()
-            self.expression.setPhrase(
+                self.expression.setPhrase(
                 self.expressionBuilder.ifnull(
-                    self.expressionBuilder.column(self.geomName),
-                    self.expressionBuilder.constant(False),
-                    self.expressionBuilder.ST_Contains(
-                        self.expressionBuilder.ST_Buffer(
-                            self.expressionBuilder.column(self.geomName),
-                            tolerance1
-                        ),
-                        self.expressionBuilder.geometry(line1)
-                    )
-                ).toString()
-            )
+                        self.expressionBuilder.column(self.geomName),
+                        self.expressionBuilder.constant(False),
+                        self.expressionBuilder.ST_Contains(
+                            self.expressionBuilder.ST_Buffer(
+                                self.expressionBuilder.column(self.geomName),
+                                tolerance1
+                            ),
+                            self.expressionBuilder.geometry(line1)
+                        )
+                    ).toString()
+                )
             if theDataSet2.findFirst(self.expression) != None:
                 result[0] = True
         return result
