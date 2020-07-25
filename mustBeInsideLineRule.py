@@ -13,7 +13,7 @@ from org.gvsig.topology.lib.api import TopologyLocator
 from org.gvsig.topology.lib.spi import AbstractTopologyRule
 
 from deleteLineAction import DeleteLineAction
-# from markLineAction import MarkLineAction
+from markLineAction import MarkLineAction
 
 class MustBeInsideLineRule(AbstractTopologyRule):
     
@@ -24,7 +24,7 @@ class MustBeInsideLineRule(AbstractTopologyRule):
     def __init__(self, plan, factory, tolerance, dataSet1, dataSet2):
         AbstractTopologyRule.__init__(self, plan, factory, tolerance, dataSet1, dataSet2)
         self.addAction(DeleteLineAction())
-        # self.addAction(MarkLineAction())
+        self.addAction(MarkLineAction())
     
     def contains(self, line1, theDataSet2, tolerance1):
         result = [False, []]
