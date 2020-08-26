@@ -1,0 +1,35 @@
+{
+    "id": "MustBeInsideLine",
+    "name": "Must Be Inside",
+    "description": [ 
+        "<img src=\"@@@_d/mustBeInside.png\">\n",
+        "The rule requires that the lines in the input layer ",
+        "must be covered by any of the polygons from the coverage layer, ",
+        "if this is not the case the error report is created. "
+        "For this rule there are 2 layers, one is taken as the input layer and the other is the coverage layer. ",
+        "The lines of the input layer are taken with a certain tolerance, ",
+        "so a buffer is calculated where the radius of this buffer is the tolerance."
+    ],
+    "actions" : {
+        "DeleteLine": {
+            "name" : "Delete Line",
+            "description": [ 
+                "This action deletes the lines errors, ",
+                "these are the not contained lines by the polygons. ",
+                "Delete the entities that do not comply with the rule, ",
+                "always taking account the established tolerance. ",
+                "The lines to delete can be selected individually."
+            ]
+        },
+        "MarkLine": {
+            "name" : "Mark Line",
+            "description": [ 
+                "This action makes a new layer with red lines marks ",
+                "which corresponds to the lines selected in the error report. ",
+                "This action marks the errors in a clear visual way, ",
+                "then the user must choose what to do with them. ",
+                "Lines that are not inside are marked by the error report."
+            ]
+        }
+    }
+}
